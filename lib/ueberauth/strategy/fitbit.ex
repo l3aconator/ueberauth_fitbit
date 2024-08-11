@@ -33,7 +33,8 @@ defmodule Ueberauth.Strategy.Fitbit do
     opts = [redirect_uri: callback_url(conn)]
     client = Ueberauth.Strategy.Fitbit.OAuth.get_token!([code: code], opts)
     token = client.token
-    token = Map.put(token, :access_token, Jason.decode!(token.access_token)["access_token"])
+    decoded_token = Jason.decode!(token.access_token)
+    token = token |> Map.put(:access_token, decoded_token["access_token"]) |> Map.put(:refresh_token, decoded_token["refresh_token"]) |> Map.put(:expires_at, decoded_token["expires_at"]) |> Map.put(:token_type, decoded_token["token_type"])
 
     if token.access_token == nil do
       set_errors!(conn, [error(token.other_params["error"], token.other_params["error_description"])])
