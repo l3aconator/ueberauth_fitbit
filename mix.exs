@@ -1,8 +1,8 @@
 defmodule UeberauthFitbit.Mixfile do
   use Mix.Project
 
-  @version "0.2.3"
-  @url "https://github.com/vinniefranco/ueberauth_fitbit"
+  @version "0.2.4"
+  @url "https://github.com/l3aconator/ueberauth_fitbit"
 
   def project do
     [app: :ueberauth_fitbit,
