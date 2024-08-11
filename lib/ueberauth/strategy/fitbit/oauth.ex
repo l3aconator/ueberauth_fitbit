@@ -28,13 +28,10 @@ defmodule Ueberauth.Strategy.Fitbit.OAuth do
   end
 
   @doc """
-  Generate Authentication: Basic Base64<CLIENT_ID>:<CLIENT_SECRET>
+  Generate Authorization: Bearer <access_token>
   """
-  def auth_sig(opts \\ []) do
-    opts = options(opts)
-    sig = Base.encode64(opts[:client_id] <> ":" <> opts[:client_secret])
-
-    "Basic #{sig}"
+  def auth_sig(access_token) when is_binary(access_token) do
+    "Bearer #{access_token}"
   end
 
   @doc """
@@ -68,7 +65,7 @@ defmodule Ueberauth.Strategy.Fitbit.OAuth do
 
   def get(token, url, headers \\ [], opts \\ []) do
     client([token: token])
-    |> put_param("client_secret", client().client_secret)
+    |> put_header("Authorization", auth_sig(token))
     |> OAuth2.Client.get(url, headers, opts)
   end
 
