@@ -33,6 +33,7 @@ defmodule Ueberauth.Strategy.Fitbit do
     opts = [redirect_uri: callback_url(conn)]
     client = Ueberauth.Strategy.Fitbit.OAuth.get_token!([code: code], opts)
     token = client.token
+    token = Map.put(token, :access_token, Jason.decode!(token.access_token)["access_token"])
 
     if token.access_token == nil do
       set_errors!(conn, [error(token.other_params["error"], token.other_params["error_description"])])
@@ -121,6 +122,7 @@ defmodule Ueberauth.Strategy.Fitbit do
       { :ok, %OAuth2.Response{status_code: 401, body: _body } } ->
         set_errors!(conn, [error("token", "unauthorized")])
       { :ok, %OAuth2.Response{ status_code: status_code, body: res } } when status_code in 200..399 ->
+        res = Jason.decode!(res)
         put_private(conn, :fitbit_user, res["user"])
       { :error, %OAuth2.Error{ reason: reason } } ->
         set_errors!(conn, [error("OAuth2", reason)])
