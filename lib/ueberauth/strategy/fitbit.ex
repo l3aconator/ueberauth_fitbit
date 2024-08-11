@@ -10,6 +10,7 @@ defmodule Ueberauth.Strategy.Fitbit do
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
   alias Ueberauth.Auth.Extra
+  alias Ueberauth.Strategy.Helpers
 
   @doc """
   Handles initial request for Fitbit authentication.
@@ -19,7 +20,7 @@ defmodule Ueberauth.Strategy.Fitbit do
     opts = [redirect_uri: callback_url(conn), scope: scopes]
 
     opts =
-      if conn.params["state"], do: Keyword.put(opts, :state, conn.params["state"]), else: opts
+      opts |> Helpers.with_state_param(conn)
 
     module = option(conn, :oauth2_module)
     redirect!(conn, apply(module, :authorize_url!, [opts]))
